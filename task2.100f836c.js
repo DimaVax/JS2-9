@@ -1,0 +1,2 @@
+document.querySelector(".main__form");const e=document.querySelector(".form__email"),t=document.querySelector(".form__text");e.value=localStorage.getItem("emailInput"),t.value=localStorage.getItem("textInput"),e.addEventListener("change",e=>{localStorage.setItem("emailInput",e.target.value)}),t.addEventListener("change",e=>{localStorage.setItem("textInput",e.target.value)});
+//# sourceMappingURL=task2.100f836c.js.map
