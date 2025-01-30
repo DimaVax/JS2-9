@@ -1,8 +1,11 @@
+import _ from "lodash";
+import { v4 as uuidv4 } from 'uuid';
+
 const input = document.querySelector(".sigma-input");
 const button = document.querySelector(".link-button");
 const list = document.querySelector(".link-list");
 const links = [];
-
+console.log(links);
 
 
 const linksFromStorage = JSON.parse(localStorage.getItem("links"));
@@ -12,28 +15,37 @@ if (linksFromStorage !== null) {
       const item = document.createElement("li");
       list.prepend(item);
       const text = document.createElement("p");
+      text.setAttribute("contenteditable", "");
       text.textContent = link.text;
+      text.setAttribute("id", link.id)
       const removeBtn = document.createElement("button");
       removeBtn.textContent = "Remove";
-      
+
       item.prepend(removeBtn);
       item.prepend(text);
 
       removeBtn.addEventListener("click", () => {
         item.remove();
-        
-
-        const savedLinks = localStorage.getItem('links');
-        const linksArr = JSON.parse(savedLinks);
-        linksArr.forEach(link => {
+        links.forEach((link) => {
           const linkText = link.text;
-          console.log(linkText);
-          if(linkText === text.textContent){
+          if (linkText === text.textContent) {
+            _.remove(links, (currentLink) => currentLink === link);
             localStorage.setItem("links", JSON.stringify(links));
           }
         });
-        
       });
+
+      text.addEventListener('blur', (e) =>{
+        links.forEach((link, index) => {
+          const linkId = link.id;
+          console.log(e.target)
+          if (linkId === text.id) {
+            links[index].text = text.textContent
+            localStorage.setItem("links", JSON.stringify(links));
+          }
+          console.log(links);
+        });
+      })
 
       const linkObj = {
         text: link.text,
@@ -51,6 +63,7 @@ button.addEventListener("click", () => {
     const text = document.createElement("p");
     text.textContent = input.value;
     text.setAttribute("contenteditable", "");
+    text.setAttribute("id", uuidv4())
 
     const removeBtn = document.createElement("button");
     removeBtn.textContent = "Remove";
@@ -60,37 +73,31 @@ button.addEventListener("click", () => {
 
     removeBtn.addEventListener("click", () => {
       item.remove();
-      const savedLinks = localStorage.getItem('links');
-        const linksArr = JSON.parse(savedLinks);
-        linksArr.forEach(link => {
-          const linkText = link.text;
-          if(linkText === text.textContent){
-            console.log(text.textContent)
-            localStorage.setItem("links", JSON.stringify(links));
-          }
-        });
+      links.forEach((link) => {
+        const linkText = link.text;
+        if (linkText === text.textContent) {
+          _.remove(links, (currentLink) => currentLink === link);
+          localStorage.setItem("links", JSON.stringify(links));
+        }
+        console.log(links);
+      });
     });
+    text.addEventListener('blur', (e) =>{
+      links.forEach((link, index) => {
+        const linkId = link.id;
+        console.log(e.target)
+        if (linkId === text.id) {
+          links[index].text = text.textContent
+          localStorage.setItem("links", JSON.stringify(links));
+        }
+        console.log(links);
+      });
+    })
 
     const linkObj = {
       text: input.value,
+      id: text.id
     };
-
-    // text.addEventListener("click", () => {
-    //   if (text.style.textDecoration === "line-through") {
-    //     text.style.textDecoration = "none";
-    //   } else {
-    //     text.style.textDecoration = "line-through";
-    //   }
-    //   linkObj.isDone = !linkObj.isDone;
-    //   let currentIndex;
-    //   links.forEach((link, index) => {
-    //     if (link.text === linkObj.text) {
-    //       currentIndex = index;
-    //     }
-    //   });
-    //   links[currentIndex] = linkObj;
-    //   localStorage.setItem("links", JSON.stringify(links));
-    // });
 
     links.push(linkObj);
     localStorage.setItem("links", JSON.stringify(links));
